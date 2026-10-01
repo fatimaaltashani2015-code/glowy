@@ -67,18 +67,25 @@ export default async function LoginPage({
           </button>
         </form>
 
-        <div className="mt-6 rounded-2xl border border-line bg-paper/80 p-5 text-sm text-muted backdrop-blur">
-          <p className="font-medium text-ink">
-            حسابات التجريب · كلمة المرور 123456
+        {process.env.NODE_ENV !== "production" ? (
+          <div className="mt-6 rounded-2xl border border-line bg-paper/80 p-5 text-sm text-muted backdrop-blur">
+            <p className="font-medium text-ink">
+              حسابات التجريب · كلمة المرور 123456
+            </p>
+            <ul className="mt-3 space-y-1">
+              {accounts.map(([user, role]) => (
+                <li key={user}>
+                  <span className="font-medium text-gold">{user}</span> — {role}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="mt-6 text-center text-sm text-muted">
+            استخدمي حساب المديرة من إعدادات الاستضافة (ADMIN_USERNAME /
+            ADMIN_PASSWORD).
           </p>
-          <ul className="mt-3 space-y-1">
-            {accounts.map(([user, role]) => (
-              <li key={user}>
-                <span className="font-medium text-gold">{user}</span> — {role}
-              </li>
-            ))}
-          </ul>
-        </div>
+        )}
       </div>
     </div>
   );
