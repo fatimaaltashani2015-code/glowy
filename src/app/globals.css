@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-cairo);
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-cream: #fdf2f8;
+  --color-paper: #ffffff;
+  --color-rose: #e11d8f;
+  --color-rose-dark: #be1277;
+  --color-line: #f5d0fe;
+  --color-gold: #a855f7;
+  --color-ok: #10b981;
+  --color-warn: #f97316;
+  --color-danger: #ef4444;
+  --color-wood: #7c3aed;
+}
+
+html,
+body {
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-cairo), "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top right, #fce7f3 0%, transparent 42%),
+    radial-gradient(circle at bottom left, #ede9fe 0%, transparent 38%),
+    linear-gradient(180deg, #fdf2f8 0%, #faf5ff 45%, #f0fdfa 100%);
+  background-attachment: fixed;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+}
+
+.font-script {
+  font-family: var(--font-script), serif;
+}
+
+.sidebar-gradient {
+  background: linear-gradient(165deg, #6366f1 0%, #a855f7 42%, #ec4899 100%);
+}
+
+.login-gradient {
+  background:
+    radial-gradient(circle at 20% 20%, #fbcfe8 0%, transparent 35%),
+    radial-gradient(circle at 80% 10%, #ddd6fe 0%, transparent 32%),
+    radial-gradient(circle at 50% 100%, #a5f3fc 0%, transparent 40%),
+    linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 50%, #ecfeff 100%);
+}
+
+#thermal-print-root {
+  position: absolute;
+  left: -99999px;
+  top: 0;
+  width: 58mm;
+}
+
+@media print {
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
+
+  html.printing-receipt * {
+    color: #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  html.printing-receipt,
+  html.printing-receipt body {
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 58mm !important;
+  }
+
+  html.printing-receipt body > *:not(#thermal-print-root) {
+    display: none !important;
+  }
+
+  html.printing-receipt #thermal-print-root {
+    display: block !important;
+    width: 58mm;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  html.printing-receipt .stack {
+    width: 54mm;
+    margin: 0 auto;
+    color: #000;
+    background: #fff;
+    font-family: Tahoma, Arial, "Segoe UI", sans-serif;
+    direction: rtl;
+  }
+
+  html.printing-receipt .ticket {
+    width: 54mm;
+    color: #000;
+    background: #fff;
+    padding: 2mm 1mm 5mm;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  html.printing-receipt .ticket:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  html.printing-receipt .brand,
+  html.printing-receipt .center,
+  html.printing-receipt .copy,
+  html.printing-receipt .muted,
+  html.printing-receipt .thanks,
+  html.printing-receipt .cut,
+  html.printing-receipt .stars,
+  html.printing-receipt .title {
+    text-align: center;
+  }
+
+  html.printing-receipt .stars {
+    margin: 2px 0;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    font-weight: 700;
+  }
+
+  html.printing-receipt .name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+  }
+
+  html.printing-receipt .sub {
+    margin: 1px 0 0;
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    font-weight: 700;
+  }
+
+  html.printing-receipt .copy,
+  html.printing-receipt .muted,
+  html.printing-receipt .thanks,
+  html.printing-receipt .cut {
+    margin: 3px 0 0;
+    font-size: 10px;
+  }
+
+  html.printing-receipt .title {
+    margin: 4px 0 0;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  html.printing-receipt .dash,
+  html.printing-receipt .solid {
+    border: 0;
+    margin: 5px 0;
+    height: 0;
+  }
+
+  html.printing-receipt .dash {
+    border-top: 1px dashed #000;
+  }
+
+  html.printing-receipt .solid {
+    border-top: 1px solid #000;
+  }
+
+  html.printing-receipt .r {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 2px 0;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  html.printing-receipt .r .v {
+    text-align: left;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  html.printing-receipt .box {
+    margin: 4px 0;
+    padding: 3px 4px;
+    border: 2px solid #000;
+  }
+
+  html.printing-receipt .strong {
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  html.printing-receipt .cut {
+    letter-spacing: 0.12em;
+    margin-top: 6px;
+  }
+}

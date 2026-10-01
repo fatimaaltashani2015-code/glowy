@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  username     String   @unique
+  passwordHash String
+  role         String
+  createdAt    DateTime @default(now())
+  expert       Expert?
+  createdBookings Booking[] @relation("BookingCreatedBy")
+  createdPayments Payment[] @relation("PaymentCreatedBy")
+  createdRefunds  Refund[]  @relation("RefundCreatedBy")
+  closedDays      DayClose[]
+  auditLogs       AuditLog[]
+  blacklistEntries BlacklistEntry[] @relation("BlacklistCreatedBy")
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  experts   Expert[]
+  bookings  Booking[]
+}
+
+model Service {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  durationMinutes  Int      @default(60)
+  createdAt        DateTime @default(now())
+  experts          Expert[]
+  bookings         Booking[]
+}
+
+model Expert {
+  id                 String   @id @default(cuid())
+  name               String
+  price              Float
+  commissionPercent  Float
+  active             Boolean  @default(true)
+  roomId             String
+  room               Room     @relation(fields: [roomId], references: [id])
+  serviceId          String
+  service            Service  @relation(fields: [serviceId], references: [id])
+  userId             String?  @unique
+  user               User?    @relation(fields: [userId], references: [id])
+  createdAt          DateTime @default(now())
+  bookings           Booking[]
+  blacklistEntries   BlacklistEntry[]
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  phone     String
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+  blacklistEntries BlacklistEntry[]
+
+  @@index([phone])
+}
+
+model Booking {
+  id                 String    @id @default(cuid())
+  number             Int       @unique
+  customerId         String
+  customer           Customer  @relation(fields: [customerId], references: [id])
+  expertId           String
+  expert             Expert    @relation(fields: [expertId], references: [id])
+  serviceId          String
+  service            Service   @relation(fields: [serviceId], references: [id])
+  roomId             String
+  room               Room      @relation(fields: [roomId], references: [id])
+  startAt            DateTime
+  endAt              DateTime
+  businessDate       String
+  status             String    @default("SCHEDULED")
+  catalogPrice       Float
+  chargedPrice       Float
+  commissionPercent  Float
+  isGift             Boolean   @default(false)
+  giftReason         String?
+  attendance         String    @default("PENDING")
+  notes              String?
+  createdById        String
+  createdBy          User      @relation("BookingCreatedBy", fields: [createdById], references: [id])
+  createdAt          DateTime  @default(now())
+  payments           Payment[]
+  refunds            Refund[]
+
+  @@index([expertId, startAt])
+  @@index([businessDate])
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  bookingId     String
+  booking       Booking  @relation(fields: [bookingId], references: [id])
+  amount        Float
+  method        String
+  type          String
+  businessDate  String
+  paidAt        DateTime @default(now())
+  createdById   String
+  createdBy     User     @relation("PaymentCreatedBy", fields: [createdById], references: [id])
+  note          String?
+
+  @@index([businessDate])
+}
+
+model Refund {
+  id            String   @id @default(cuid())
+  bookingId     String
+  booking       Booking  @relation(fields: [bookingId], references: [id])
+  amount        Float
+  method        String   @default("CASH")
+  reason        String
+  businessDate  String
+  createdAt     DateTime @default(now())
+  createdById   String
+  createdBy     User     @relation("RefundCreatedBy", fields: [createdById], references: [id])
+  note          String?
+
+  @@index([businessDate])
+}
+
+model BlacklistEntry {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  scope       String
+  expertId    String?
+  expert      Expert?  @relation(fields: [expertId], references: [id], onDelete: Cascade)
+  reason      String?
+  createdById String
+  createdBy   User     @relation("BlacklistCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([customerId])
+  @@index([expertId])
+}
+
+model DayClose {
+  id               String   @id @default(cuid())
+  businessDate     String   @unique
+  closedAt         DateTime @default(now())
+  closedById       String
+  closedBy         User     @relation(fields: [closedById], references: [id])
+  totalCollected   Float
+  totalDeposits    Float
+  totalRefunds     Float
+  totalExpertDues  Float
+  netRevenue       Float
+  cashTotal        Float
+  cardTotal        Float
+  transferTotal    Float
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String
+  details   String
+  createdAt DateTime @default(now())
+}
