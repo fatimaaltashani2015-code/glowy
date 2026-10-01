@@ -1,6 +1,7 @@
 FROM node:20-bookworm-slim AS deps
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 RUN npm ci
@@ -18,6 +19,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 ENV DATABASE_URL="file:/data/glowy.db"
 
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
@@ -34,8 +36,9 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY scripts ./scripts
 
-RUN chown -R nextjs:nodejs /app /data
+RUN chown -R nextjs:nodejs /app /data \
+  && chmod +x ./scripts/docker-entrypoint.sh
 
-USER nextjs
+# Root is required so Railway can write SQLite under mounted /data.
 EXPOSE 3000
 ENTRYPOINT ["sh", "./scripts/docker-entrypoint.sh"]
